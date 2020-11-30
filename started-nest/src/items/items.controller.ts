@@ -9,9 +9,7 @@ import {
   Param,
   Post,
   Put,
-  Res,
 } from '@nestjs/common';
-import { Response } from 'express';
 
 @Controller('items')
 export class ItemsController {
@@ -23,33 +21,25 @@ export class ItemsController {
   }
 
   @Get(':id')
-  async show(@Param('id') id): Promise<ItemInterface> {
+  async show(@Param('id') id: string): Promise<ItemInterface> {
     return await this.itemsService.findOne(id);
   }
 
   @Delete(':id')
-  delete(@Param('id') id, @Res() response: Response): Response {
-    return response.json({
-      id,
-    });
+  delete(@Param('id') id: string): Promise<ItemInterface> {
+    return this.itemsService.delete(id);
   }
 
   @Put(':id')
-  update(@Body() body: CreateItemsDto, @Param('id') id): Object {
-    return {
-      body,
-      id,
-    };
+  update(
+    @Body() body: CreateItemsDto,
+    @Param('id') id: string,
+  ): Promise<ItemInterface> {
+    return this.itemsService.update(id, body);
   }
 
   @Post()
-  create(@Body() body: CreateItemsDto): Object {
-    return {
-      post: {
-        name: body.name,
-        description: body.description,
-        mount: body.mount,
-      },
-    };
+  async create(@Body() body: CreateItemsDto): Promise<ItemInterface> {
+    return this.itemsService.create(body);
   }
 }
