@@ -1,15 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
-
-interface ResponseObject {
-  message: string;
-}
+import { User } from './../entities/UserModel';
+import { Body, Controller, Post } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller('users')
 export class UsersController {
-  @Get('/test')
-  test(): ResponseObject {
-    return {
-      message: 'Deu certo',
-    };
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
+
+  @Post()
+  async store(@Body() body: User): Promise<User> {
+    const user = this.userRepository.create(body);
+    return await this.userRepository.save(user);
   }
 }
